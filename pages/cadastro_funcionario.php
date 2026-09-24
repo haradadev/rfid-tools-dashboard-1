@@ -185,8 +185,6 @@ unset($_SESSION['msg_func'], $_SESSION['status_func']);
     </main>
 
 
-    <script src="main.js"></script>
-
     <script>
         const botaoOlhoCadastro =
             document.getElementById('toggleSenhaCadastro');

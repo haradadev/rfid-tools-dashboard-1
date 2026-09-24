@@ -4,27 +4,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
-// =========================================================
-// VERIFICAR LOGIN
-// =========================================================
-
-if (empty($_SESSION['logado'])) {
-    header('Location: login.php');
+if (empty($_SESSION['funcionario_id'])) {
+    header('Location: ../pages/index_cadastro.php');
     exit;
 }
 
-
-// =========================================================
-// CONEXÃO COM O BANCO
-// =========================================================
-
-require_once '../config/conexao.php';
-
-
-// =========================================================
-// BUSCAR FUNCIONÁRIOS
-// =========================================================
+require_once __DIR__ . '/../config/conexao.php';
 
 try {
 
@@ -33,7 +18,7 @@ try {
             id,
             nome,
             matricula,
-            setor,
+            departamento,
             email,
             ativo,
             criado_em
@@ -58,12 +43,8 @@ try {
 }
 
 
-// =========================================================
-// DADOS DO USUÁRIO LOGADO
-// =========================================================
-
 $nomeUsuario = $_SESSION['funcionario_nome'] ?? 'Usuário';
-$setorUsuario = $_SESSION['funcionario_setor'] ?? '';
+$departamentoUsuario = $_SESSION['funcionario_departamento'] ?? '';
 
 ?>
 
@@ -97,17 +78,13 @@ $setorUsuario = $_SESSION['funcionario_setor'] ?? '';
 
     <link
         rel="stylesheet"
-        href="style_sistema.css"
+        href="../pages/style_sistema.css"
     >
 
 </head>
 
 
 <body>
-
-    <!-- =====================================================
-         BARRA SUPERIOR
-         ===================================================== -->
 
     <header class="topbar">
 
@@ -130,10 +107,10 @@ $setorUsuario = $_SESSION['funcionario_setor'] ?? '';
                     <?= htmlspecialchars($nomeUsuario) ?>
                 </strong>
 
-                <?php if ($setorUsuario): ?>
+                <?php if ($departamentoUsuario): ?>
 
                     <span>
-                        <?= htmlspecialchars($setorUsuario) ?>
+                        <?= htmlspecialchars($departamentoUsuario) ?>
                     </span>
 
                 <?php endif; ?>
@@ -151,12 +128,6 @@ $setorUsuario = $_SESSION['funcionario_setor'] ?? '';
         </div>
 
     </header>
-
-
-
-    <!-- =====================================================
-         CONTEÚDO
-         ===================================================== -->
 
     <main class="painel">
 
@@ -180,19 +151,13 @@ $setorUsuario = $_SESSION['funcionario_setor'] ?? '';
 
 
             <a
-                href="cadastro_funcionario.php"
+                href="../pages/cadastro_funcionario.php"
                 class="botao-primario botao-novo-funcionario"
             >
                 + Novo funcionário
             </a>
 
         </section>
-
-
-
-        <!-- =================================================
-             ESTATÍSTICAS
-             ================================================= -->
 
         <?php
 
@@ -268,13 +233,6 @@ $setorUsuario = $_SESSION['funcionario_setor'] ?? '';
             </div>
 
         </section>
-
-
-
-        <!-- =================================================
-             TABELA
-             ================================================= -->
-
         <section class="painel-secao tabela-funcionarios">
 
             <div class="secao-cabecalho">
@@ -324,7 +282,7 @@ $setorUsuario = $_SESSION['funcionario_setor'] ?? '';
                     </p>
 
                     <a
-                        href="cadastro_funcionario.php"
+                        href="../pages/cadastro_funcionario.php"
                         class="botao-secundario"
                     >
                         Cadastrar funcionário
@@ -407,7 +365,7 @@ $setorUsuario = $_SESSION['funcionario_setor'] ?? '';
 
                                     <td>
                                         <?= htmlspecialchars(
-                                            $funcionario['setor']
+                                            $funcionario['departamento']
                                         ) ?>
                                     </td>
 

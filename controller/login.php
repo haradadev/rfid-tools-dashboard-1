@@ -4,42 +4,32 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once '../config/conexao.php';
+function voltarParaLogin(string $mensagem, string $status = 'erro'): void
+{
+    $_SESSION['msg_login'] = $mensagem;
+    $_SESSION['status_login'] = $status;
+    header('Location: ../pages/index_cadastro.php');
+    exit;
+}
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    voltarParaLogin('Requisição inválida.');
+}
 
-// =========================================================
-// RECEBER DADOS DO FORMULÁRIO
-// =========================================================
+require_once __DIR__ . '/../config/conexao.php';
 
 $email = trim($_POST['email'] ?? '');
 $senha = $_POST['senha'] ?? '';
 
-
-// =========================================================
-// VALIDAR CAMPOS
-// =========================================================
-
 if ($email === '' || $senha === '') {
 
-    $_SESSION['msg_login'] = 'Preencha o email e a senha.';
-    $_SESSION['status_login'] = 'erro';
-
-    header('Location: ../view/index_cadastro.php');
-    exit;
+    voltarParaLogin('Preencha o email e a senha.');
 }
 
 
-// =========================================================
-// VALIDAR EMAIL
-// =========================================================
-
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-    $_SESSION['msg_login'] = 'Informe um email válido.';
-    $_SESSION['status_login'] = 'erro';
-
-    header('Location: ../view/index_cadastro.php');
-    exit;
+    voltarParaLogin('Informe um email válido.');
 }
 
 
@@ -54,11 +44,11 @@ try {
             id,
             nome,
             matricula,
-            setor,
+            departamento,
             email,
             ativo,
             criado_em,
-            Senha
+            senha_hash
         FROM funcionarios
         WHERE email = :email
         LIMIT 1
@@ -79,11 +69,7 @@ try {
 
     if (!$funcionario) {
 
-        $_SESSION['msg_login'] = 'Email ou senha incorretos.';
-        $_SESSION['status_login'] = 'erro';
-
-        header('Location: ../view/index_cadastro.php');
-        exit;
+        voltarParaLogin('Email ou senha incorretos.');
     }
 
 
@@ -93,13 +79,7 @@ try {
 
     if ((int) $funcionario['ativo'] !== 1) {
 
-        $_SESSION['msg_login'] =
-            'Este funcionário está com o acesso desativado.';
-
-        $_SESSION['status_login'] = 'erro';
-
-        header('Location: ../view/index_cadastro.php');
-        exit;
+        voltarParaLogin('Este funcionário está com o acesso desativado.');
     }
 
 
@@ -107,13 +87,8 @@ try {
     // VERIFICAR SENHA
     // =====================================================
 
-    if (!password_verify($senha, $funcionario['Senha'])) {
-
-        $_SESSION['msg_login'] = 'Email ou senha incorretos.';
-        $_SESSION['status_login'] = 'erro';
-
-        header('Location: ../view/index_cadastro.php');
-        exit;
+    if (!password_verify($senha, $funcionario['senha_hash'])) {
+        voltarParaLogin('Email ou senha incorretos.');
     }
 
 
@@ -129,7 +104,7 @@ try {
     $_SESSION['funcionario_id'] = $funcionario['id'];
     $_SESSION['funcionario_nome'] = $funcionario['nome'];
     $_SESSION['funcionario_matricula'] = $funcionario['matricula'];
-    $_SESSION['funcionario_setor'] = $funcionario['setor'];
+    $_SESSION['funcionario_departamento'] = $funcionario['departamento'];
     $_SESSION['funcionario_email'] = $funcionario['email'];
 
 
@@ -137,7 +112,7 @@ try {
     // REDIRECIONAR PARA O SISTEMA
     // =====================================================
 
-    header('Location: ../view/sistema.php');
+    header('Location: ../pages/index_sistema.php');
     exit;
 
 
@@ -149,12 +124,5 @@ try {
     );
 
 
-    $_SESSION['msg_login'] =
-        'Não foi possível realizar o login. Tente novamente.';
-
-    $_SESSION['status_login'] = 'erro';
-
-
-    header('Location: ../view/index_cadastro.php');
-    exit;
+    voltarParaLogin('Não foi possível realizar o login. Tente novamente.');
 }

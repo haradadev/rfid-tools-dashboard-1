@@ -5,23 +5,23 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Conecta ao banco (agora só existe $pdo — nada de $conn/mysqli)
-require 'conexao.php';
-
 // Verifica se os dados vieram pelo formulário
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../pages/index_cadastro.php');
     exit;
 }
 
+// Conecta ao banco (agora só existe $pdo — nada de $conn/mysqli)
+require __DIR__ . '/conexao.php';
+
 // Recebe os dados do formulário
-$email = trim($_POST['Email'] ?? '');
-$senha = $_POST['Senha'] ?? '';
+$email = trim($_POST['email'] ?? $_POST['Email'] ?? '');
+$senha = $_POST['senha'] ?? $_POST['Senha'] ?? '';
 
 // Verifica se os campos estão preenchidos
 if (empty($email) || empty($senha)) {
-    $_SESSION['msg'] = 'Preencha o email e a senha!';
-    $_SESSION['status'] = 'erro';
+    $_SESSION['msg_login'] = 'Preencha o email e a senha!';
+    $_SESSION['status_login'] = 'erro';
 
     header('Location: ../pages/index_cadastro.php');
     exit;
@@ -41,23 +41,24 @@ try {
 
         $_SESSION['funcionario_id'] = $funcionario['id'];
         $_SESSION['funcionario_nome'] = $funcionario['nome'];
-        $_SESSION['msg'] = 'Login realizado com sucesso!';
-        $_SESSION['status'] = 'ok';
+        $_SESSION['logado'] = true;
+        $_SESSION['msg_login'] = 'Login realizado com sucesso!';
+        $_SESSION['status_login'] = 'sucesso';
 
         header('Location: ../pages/index_sistema.php');
         exit;
 
     } else {
 
-        $_SESSION['msg'] = 'Email ou senha incorretos!';
-        $_SESSION['status'] = 'erro';
+        $_SESSION['msg_login'] = 'Email ou senha incorretos!';
+        $_SESSION['status_login'] = 'erro';
 
         header('Location: ../pages/index_cadastro.php');
         exit;
     }
 } catch (PDOException $e) {
-    $_SESSION['msg'] = 'Erro ao consultar o banco de dados.';
-    $_SESSION['status'] = 'erro';
+    $_SESSION['msg_login'] = 'Erro ao consultar o banco de dados.';
+    $_SESSION['status_login'] = 'erro';
 
     header('Location: ../pages/index_cadastro.php');
     exit;

@@ -5,8 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 header('Content-Type: application/json; charset=utf-8');
 
-require '../config/conexao.php';
-
 // Só funciona para quem está logado
 if (empty($_SESSION['funcionario_id'])) {
     http_response_code(401);
@@ -19,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['ok' => false, 'mensagem' => 'Método não permitido.']);
     exit;
 }
+
+require __DIR__ . '/../config/conexao.php';
 
 $tagRfid = trim($_POST['tag_rfid'] ?? '');
 $funcionarioId = $_SESSION['funcionario_id'];
@@ -78,7 +78,9 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    $pdo->rollBack();
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     http_response_code(500);
     echo json_encode(['ok' => false, 'mensagem' => 'Erro ao registrar a movimentação.']);
 }

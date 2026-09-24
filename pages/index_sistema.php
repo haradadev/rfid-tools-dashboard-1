@@ -1,6 +1,6 @@
 <?php
-require '../config/exigir_login.php';
-require '../config/conexao.php';
+require __DIR__ . '/../config/exigir_login.php';
+require __DIR__ . '/../config/conexao.php';
 
 // ===== Busca as ferramentas e monta os contadores =====
 $ferramentas = $pdo->query('SELECT id, nome, codigo, tag_rfid, categoria, localizacao, status FROM ferramentas ORDER BY nome')->fetchAll();

@@ -7,6 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (empty($_SESSION['funcionario_id'])) {
+    $_SESSION['msg_login'] = 'Faça login para acessar o sistema.';
+    $_SESSION['status_login'] = 'erro';
     header('Location: index_cadastro.php');
     exit;
 }

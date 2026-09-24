@@ -3,13 +3,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require '../config/conexao.php';
-
 // Só aceita requisições vindas de um POST (do formulário)
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../pages/cadastro_funcionario.php');
     exit;
 }
+
+require __DIR__ . '/../config/conexao.php';
 
 // Pega os dados do formulário e remove espaços extras
 $nome         = trim($_POST['nome'] ?? '');

@@ -3,6 +3,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!empty($_SESSION['funcionario_id'])) {
+    header('Location: index_sistema.php');
+    exit;
+}
+
 $msg = $_SESSION['msg_login'] ?? '';
 $status = $_SESSION['status_login'] ?? '';
 
@@ -156,8 +161,6 @@ unset($_SESSION['msg_login'], $_SESSION['status_login']);
 
     </main>
 
-
-    <script src="main.js"></script>
 
     <script>
         const botaoOlhoLogin =
